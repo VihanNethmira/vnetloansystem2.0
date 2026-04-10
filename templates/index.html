@@ -27,7 +27,7 @@
     <div class="header"><strong>{{ username }}</strong><span>Balance: <b>{{ balance * -1 }}</b></span></div>
     <div class="ledger">
         <div class="col right">
-            <center><small>Credit (+)</small></center><br>
+            <center><small>Debit (+)</small></center><br>
             {% for row in rows if row[6] == 'give' %}
             <div class="row">
                 <span><span class="date">{{ row[3] }}</span> {{ row[4] }}</span>
@@ -36,7 +36,7 @@
             {% endfor %}
         </div>
         <div class="col left">
-            <center><small>Debit (-)</small></center><br>
+            <center><small>Credit (-)</small></center><br>
             {% for row in rows if row[6] == 'take' %}
             <div class="row">
                 <span><span class="date">{{ row[3] }}</span> {{ row[4] }}</span>
