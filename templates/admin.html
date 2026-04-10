@@ -24,7 +24,7 @@
     <div class="card">
         <div class="total-banner">
             <small>Business Balance ({{ month }})</small>
-            <h2 style="margin: 5px 0;">Rs. {{ grand_total }}</h2>
+            <h2 style="margin: 5px 0;">Rs. {{ grand_total * -1 }}</h2>
         </div>
         <table>
             <thead><tr><th>User</th><th>Balance</th><th>Actions</th></tr></thead>
@@ -32,7 +32,7 @@
                 {% for u in users %}
                 <tr>
                     <td data-label="User"><strong>{{ u.name }}</strong></td>
-                    <td data-label="Balance" style="color: {{ '#ef4444' if u.balance > 0 else '#059669' }}"><b>{{ u.balance }}</b></td>
+                    <td data-label="Balance" style="color: {{ '#ef4444' if u.balance > 0 else '#059669' }}"><b>{{ u.balance * -1 }}</b></td>
                     <td data-label="Actions">
                         <a href="/user/{{ u.name }}" class="btn-sm" style="background: #2563eb;">Manage</a>
                         <a href="/view/{{ u.slug }}" class="btn-sm" style="background: #64748b;">Share Link</a>
