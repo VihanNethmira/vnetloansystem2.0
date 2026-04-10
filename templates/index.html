@@ -24,19 +24,10 @@
 </head>
 <body>
 <div class="container">
-    <div class="header"><strong>{{ username }}</strong><span>Balance: <b>{{ balance }}</b></span></div>
+    <div class="header"><strong>{{ username }}</strong><span>Balance: <b>{{ balance * -1 }}</b></span></div>
     <div class="ledger">
-        <div class="col left">
-            <center><small>USAGE (+)</small></center><br>
-            {% for row in rows if row[6] == 'take' %}
-            <div class="row">
-                <span><span class="date">{{ row[3] }}</span> {{ row[4] }}</span>
-                <span><b>{{ row[5] }}</b><a href="/delete_entry/{{ username }}/{{ row[0] }}" class="del" onclick="return confirm('Delete transaction?')">&times;</a></span>
-            </div>
-            {% endfor %}
-        </div>
         <div class="col right">
-            <center><small>PAYMENTS (-)</small></center><br>
+            <center><small>Credit (+)</small></center><br>
             {% for row in rows if row[6] == 'give' %}
             <div class="row">
                 <span><span class="date">{{ row[3] }}</span> {{ row[4] }}</span>
@@ -44,6 +35,15 @@
             </div>
             {% endfor %}
         </div>
+        <div class="col left">
+            <center><small>Debit (-)</small></center><br>
+            {% for row in rows if row[6] == 'take' %}
+            <div class="row">
+                <span><span class="date">{{ row[3] }}</span> {{ row[4] }}</span>
+                <span><b>{{ row[5] }}</b><a href="/delete_entry/{{ username }}/{{ row[0] }}" class="del" onclick="return confirm('Delete transaction?')">&times;</a></span>
+            </div>
+            {% endfor %}
+        </div>        
     </div>
 </div>
 <div class="container form-box">
