@@ -164,19 +164,6 @@
     </div>
 
     <div class="ledger-wrapper">
-        <div class="ledger-col credit-side">
-            <div class="side-title">Usage / Credits</div>
-            {% for row in rows if row[6] == 'give' %}
-            <div class="entry-row">
-                <div class="entry-info">
-                    <span class="entry-date">{{ row[3] }}</span>
-                    <span class="entry-desc">{{ row[4] }}</span>
-                </div>
-                <span class="amt-credit">{{ row[5] }}</span>
-            </div>
-            {% endfor %}
-        </div>
-
         <div class="ledger-col">
             <div class="side-title">Payments / Debits</div>
             {% for row in rows if row[6] == 'take' %}
@@ -186,6 +173,18 @@
                     <span class="entry-desc">{{ row[4] }}</span>
                 </div>
                 <span class="amt-debit">{{ row[5] }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="ledger-col credit-side">
+            <div class="side-title">Usage / Credits</div>
+            {% for row in rows if row[6] == 'give' %}
+            <div class="entry-row">
+                <div class="entry-info">
+                    <span class="entry-date">{{ row[3] }}</span>
+                    <span class="entry-desc">{{ row[4] }}</span>
+                </div>
+                <span class="amt-credit">{{ row[5] }}</span>
             </div>
             {% endfor %}
         </div>
