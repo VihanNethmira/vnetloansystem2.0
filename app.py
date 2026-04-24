@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from datetime import datetime
 import os
@@ -9,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'vnet_ledger_secure_key'
 
 # --- SECURITY CONFIG ---
-MASTER_PASSWORD = "234ridxc823y4587r7" 
+MASTER_PASSWORD = "scrypt:32768:8:1$p7r3xv246hIQ0nNa$c3b5b366fa9b6b11ddc09be83debc1874fd8172126bbd6dc79a683dd4e5b1d2bdf2aa18d42000aa98da379ea6df3f676696040fcd057f9fac86c634556d92ac6" 
 
 def is_logged_in():
     return session.get('authenticated') == True
@@ -85,7 +86,9 @@ def get_balance(db_path, username):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form.get('password') == MASTER_PASSWORD:
+        user_entered_password = request.form.get('password')
+
+        if check_password_hash(MASTER_PASSWORD, user_entered_password):
             session.clear()
             session['authenticated'] = True
             return redirect(url_for('select_user'))
