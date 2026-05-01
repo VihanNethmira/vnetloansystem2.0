@@ -212,7 +212,9 @@ def delete_entry(username, entry_id):
 @app.route('/history')
 def history():
     if not is_logged_in(): return redirect(url_for('login'))
-    files = sorted([f for f in os.listdir('.') if f.endswith('.db')], reverse=True)
+    # පැරණි පේළිය වෙනුවට මෙය දාන්න:
+    all_db_files = [f for f in os.listdir('.') if f.endswith('.db')]
+    files = sorted(all_db_files, key=lambda f: datetime.strptime(f.replace('.db', ''), '%B_%Y'), reverse=True)
     return render_template('history.html', files=files)
 
 @app.route('/view/<slug>')
@@ -223,7 +225,8 @@ def user_view(slug):
     
     db_path = get_db_path()
     init_db(db_path)
-    files = sorted([f for f in os.listdir('.') if f.endswith('.db')], reverse=True)
+    all_db_files = [f for f in os.listdir('.') if f.endswith('.db')]
+    files = sorted(all_db_files, key=lambda f: datetime.strptime(f.replace('.db', ''), '%B_%Y'), reverse=True)
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT user FROM entries WHERE slug = ? LIMIT 1", (slug,))
