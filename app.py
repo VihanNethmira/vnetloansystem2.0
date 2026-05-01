@@ -66,8 +66,9 @@ def init_db(db_path):
                 # Carry over non-zero balances
                 if prev_bal != 0:
                     etype = 'take' if prev_bal >= 0 else 'give'
+                    current_month_start = datetime.now().strftime("%m/01") # වත්මන් මාසයේ 01 වෙනිදා දිනය ලෙස ලබා ගැනීම (උදා: 05/01)
                     c.execute("INSERT INTO entries (user, slug, date, description, amount, type) VALUES (?, ?, ?, ?, ?, ?)",
-                              (user, slug, "01/01", "Previous Balance", abs(prev_bal), etype))
+                    (user, slug, current_month_start, "Previous Balance", abs(prev_bal), etype))
             conn_prev.close()
             conn.commit()
     conn.close()
