@@ -83,10 +83,11 @@ def get_balance(db_path, username):
     return sum(r[0] if r[1] == 'take' else -r[0] for r in rows)
 
 # --- ROUTES ---
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-    
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -222,25 +223,47 @@ def history():
 
 @app.route('/view/<slug>')
 def user_view(slug):
-    # Only reset to LIVE if the user is visiting freshly (without selection)
+    # Fresh visit එකකදී LIVE එක පෙන්වීමට
     if not request.args.get('stay'):
         session.pop('selected_db', None)
     
-    db_path = get_db_path()
-    init_db(db_path)
-    all_db_files = [f for f in os.listdir('.') if f.endswith('.db')]
-    files = sorted(all_db_files, key=lambda f: datetime.strptime(f.replace('.db', ''), '%B_%Y'), reverse=True)
-    conn = sqlite3.connect(db_path)
+    current_db = get_db_path() # vnet_ledger.db හෝ session එකේ ඇති මාසය
+
+    # Database එකට සම්බන්ධ වීම
+    conn = sqlite3.connect(current_db)
     c = conn.cursor()
+    
+    # 1. මුලින්ම මේ slug එකට අදාළ User කෙනෙක් ඉන්නවද බලනවා
     c.execute("SELECT user FROM entries WHERE slug = ? LIMIT 1", (slug,))
     res = c.fetchone()
-    if not res: return "Invalid Link", 404
+    
+    # --- මෙන්න මෙතන තමයි 404 පෙන්වන්න ඕනේ ---
+    if not res:
+        conn.close()
+        # පාරිභෝගිකයා නැතිනම් කෙලින්ම 404 Page එකට යවනවා
+        return render_template('404.html'), 404
+    
     username = res[0]
+    
+    # 2. එම User ගේ දත්ත ලබාගැනීම
     c.execute("SELECT * FROM entries WHERE user = ? ORDER BY date ASC, id ASC", (username,))
     rows = c.fetchall()
-    balance = get_balance(db_path, username)
+    
+    # 3. Balance එක ගණනය කිරීම
+    c.execute("SELECT SUM(CASE WHEN type='give' THEN amount ELSE -amount END) FROM entries WHERE user=?", (username,))
+    balance = c.fetchone()[0] or 0
     conn.close()
-    return render_template('user_view.html', rows=rows, balance=round(balance, 2), username=username, files=files, current_month=db_path, is_live=('selected_db' not in session))
+
+    # Sorting Logic (මාස පෙළගැස්වීම)
+    def sort_logic(f):
+        if f == "vnet_ledger.db": return datetime.max
+        try: return datetime.strptime(f.replace('.db', ''), '%B_%Y')
+        except: return datetime.min
+
+    all_db_files = sorted([f for f in os.listdir('.') if f.endswith('.db')], key=sort_logic, reverse=True)
+
+    return render_template('user_view.html', rows=rows, balance=round(balance, 2), 
+                           username=username, files=all_db_files, current_month=current_db)
 
 @app.route('/view/<slug>/set_month/<filename>')
 def user_view_set_month(slug, filename):
