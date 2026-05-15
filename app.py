@@ -231,7 +231,7 @@ def user_view(slug):
     c = conn.cursor()
     c.execute("SELECT user FROM entries WHERE slug = ? LIMIT 1", (slug,))
     res = c.fetchone()
-    if not res: return "Invalid Link", 404
+    if not res: return render_template('notfound.html'), 404
     username = res[0]
     c.execute("SELECT * FROM entries WHERE user = ? ORDER BY date ASC, id ASC", (username,))
     rows = c.fetchall()
