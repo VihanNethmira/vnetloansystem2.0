@@ -241,10 +241,27 @@ def user_view(slug):
 
 @app.route('/view/<slug>/set_month/<filename>')
 def user_view_set_month(slug, filename):
-    if filename == "LIVE":
+    # 1. පාරිභෝගිකයා "LIVE" තේරුවොත් (vnet_ledger.db එකට යාමට)
+    if filename == "vnet_ledger.db" or filename == "LIVE":
         session.pop('selected_db', None)
-    elif os.path.exists(filename) and filename.endswith('.db'):
+        return redirect(url_for('user_view', slug=slug, stay=1))
+
+    # 2. වෙනත් මාසයක් (Database එකක්) තේරුවොත්
+    if os.path.exists(filename) and filename.endswith('.db'):
+        # එම මාසයේ මේ slug එක ඉන්නවද කියලා චෙක් කරනවා
+        conn = sqlite3.connect(filename)
+        c = conn.cursor()
+        c.execute("SELECT 1 FROM entries WHERE slug = ? LIMIT 1", (slug,))
+        exists = c.fetchone()
+        conn.close()
+
+        if not exists:
+            # දත්ත නැතිනම් 404 පෙන්වනවා
+            return render_template('404.html'), 404
+        
+        # දත්ත තිබේ නම් session එකට දානවා
         session['selected_db'] = filename
+
     return redirect(url_for('user_view', slug=slug, stay=1))
 
 if __name__ == '__main__':
