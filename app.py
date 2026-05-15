@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'vnet_ledger_secure_key'
 
 # --- SECURITY CONFIG ---
-MASTER_PASSWORD = "scrypt:32768:8:1$YFpLTLZKfWrXCjJ7$6f1e9d763005a706e377d04548b42603e7f4a85964bfc6d41ec712bda2cacb3503affecc9b4b5ae936339a969dc50a714041653e4abbde2e4aa1e8e890d7b08a" 
+MASTER_PASSWORD = "scrypt:32768:8:1$elHKi6LZq3941vHO$590c2ecc46d4c168d8b38497bd31221b4e4878781c76f8a8eb16533a2031df006a77728d32d9c8bdbdceb399e5f8d6fd7ac745d58f13df442da0e4147ab87404" 
 
 def is_logged_in():
     return session.get('authenticated') == True
