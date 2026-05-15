@@ -83,7 +83,10 @@ def get_balance(db_path, username):
     return sum(r[0] if r[1] == 'take' else -r[0] for r in rows)
 
 # --- ROUTES ---
-
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
